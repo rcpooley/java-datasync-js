@@ -48,13 +48,14 @@ public class DataStore {
 
 			if (updateRef.isChildOf(ref)) {
 				if (event.equals("updateChild") && ref.equals(updateRef) ||
-						event.equals("updateValue") && !ref.equals(updateRef)) {
+						event.equals("updateValue") && !ref.equals(updateRef) ||
+						event.equals("updateDirect") && !ref.equals(updateRef)) {
 					return;
 				}
 
 				ref.value((value, path1) -> callback.callback(value, ref.getRelativeChildPath(updateRef), flags));
 			} else if (updateRef.hasChild(ref)) {
-				if (event.equals("updateChild")) {
+				if (event.equals("updateChild") || event.equals("updateDirect")) {
 					return;
 				}
 
