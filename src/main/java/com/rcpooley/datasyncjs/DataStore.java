@@ -4,18 +4,24 @@ import org.json.JSONObject;
 
 public class DataStore {
 
-	private DataStoreClient manager;
+	private DataStores manager;
 	private EventEmitter emitter;
 	private String storeid;
+	private String userid;
 
-	public DataStore(DataStoreClient manager, String storeid) {
+	public DataStore(DataStores manager, String storeid, String userid) {
 		this.manager = manager;
 		this.emitter = new EventEmitter();
 		this.storeid = storeid;
+		this.userid = userid;
 	}
 
 	public String storeid() {
 		return storeid;
+	}
+
+	public String userid() {
+		return userid;
 	}
 
 	public DataRef ref(String path) {
@@ -36,6 +42,22 @@ public class DataStore {
 		emitter.emit("update", new JSONObject()
 				.put("path", DataUtil.formatPath(path))
 				.put("flags", DataUtil.toJSONArray(flags)));
+	}
+
+	public void remove(String path) {
+		remove(path, new String[0]);
+	}
+
+	public void remove(String path, String[] flags) {
+		manager.__ds__deleteData(this, path);
+
+		String[] allFlags = new String[flags.length + 1];
+		System.arraycopy(flags, 0, allFlags, 0, flags.length);
+		allFlags[allFlags.length - 1] = "__ds__removed";
+
+		emitter.emit("update", new JSONObject()
+				.put("path", DataUtil.formatPath(path))
+				.put("flags", DataUtil.toJSONArray(allFlags)));
 	}
 
 	public EventEmitter.Callback on(String event, String path, Callbacks.StoreUpdateCallback callback, boolean emitOnBind) {

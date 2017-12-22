@@ -98,6 +98,10 @@ public class DataUtil {
 			return new JSONObject(str);
 		}
 
+		if (str.equals("null")) {
+			return null;
+		}
+
 		try {
 			return Integer.parseInt(str);
 		} catch (Exception e1) {
@@ -112,6 +116,8 @@ public class DataUtil {
 	public static String toJSONString(Object val) {
 		if (val instanceof String) {
 			return "\"" + val.toString() + "\"";
+		} else if (val == null) {
+			return "null";
 		} else {
 			return val.toString();
 		}
@@ -135,5 +141,18 @@ public class DataUtil {
 			a.put(o);
 		}
 		return a;
+	}
+
+	public static Object clone(Object obj) {
+		return parseJSONString(toJSONString(obj));
+	}
+
+	public static String randomString(int len) {
+		String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < len; i++) {
+			str.append(alpha.charAt((int) (Math.random() * alpha.length())));
+		}
+		return str.toString();
 	}
 }

@@ -58,6 +58,14 @@ public class DataRef {
 		store.update(this.path, newVal, flags);
 	}
 
+	public void remove() {
+		this.remove(new String[0]);
+	}
+
+	public void remove(String[] flags) {
+		store.remove(this.path, flags);
+	}
+
 	public EventEmitter.Callback on(String event, Callbacks.StoreUpdateCallback callback) {
 		return on(event, callback, false);
 	}

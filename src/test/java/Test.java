@@ -1,21 +1,25 @@
+import com.rcpooley.datasyncjs.DataRef;
 import com.rcpooley.datasyncjs.DataStore;
 import com.rcpooley.datasyncjs.DataStoreClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Test {
 
 	private static final int COUNT = 0;
 	private static final int WORD = 1;
+	private static final int DELETE = 2;
 
-	private static int MODE = WORD;
+	private static int MODE = DELETE;
 
 	public static void main(String[] args) {
-		DataStoreClient client = new DataStoreClient().serve("store");
+		DataStoreClient client = new DataStoreClient();
 
 		MySocket socket = new MySocket();
 
 		socket.on("connect", obj -> {
 			System.out.println("Connected!");
-			client.setSocket(socket);
+			client.setSocket(socket).connectStore("store");
 		});
 		socket.on("disconnect", obj -> {
 			System.out.println("Disconnected :(");
@@ -23,6 +27,8 @@ public class Test {
 		});
 
 		DataStore store = client.getStore("store");
+
+		int tick = 0;
 
 		while (true) {
 			try {
@@ -54,6 +60,37 @@ public class Test {
 
 						store.ref("/word").update(newWord);
 					});
+					break;
+				}
+
+				case DELETE: {
+					System.out.println("Tick " + tick + ":");
+					store.ref("/delete").value((Object value, String path) -> {
+						JSONObject val = (JSONObject) value;
+						if (val == null) {
+							System.out.println("   null");
+						} else {
+							val.keySet().forEach(key -> {
+								System.out.println("   " + key + ": " + val.get(key));
+							});
+						}
+					});
+
+					DataRef ref = store.ref("/delete-cmd");
+
+					switch(tick) {
+						case 0:
+							ref.update(new JSONObject().put("cmd", "set").put("args", new JSONArray().put("/a").put("aval")));
+							ref.update(new JSONObject().put("cmd", "set").put("args", new JSONArray().put("/b").put("bval")));
+							break;
+						case 1:
+							ref.update(new JSONObject().put("cmd", "set").put("args", new JSONArray().put("/a")));
+							break;
+						case 2:
+							ref.update(new JSONObject().put("cmd", "del").put("args", new JSONArray().put("/b")));
+							break;
+					}
+					tick = (tick + 1) % 3;
 					break;
 				}
 			}

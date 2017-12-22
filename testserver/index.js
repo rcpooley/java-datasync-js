@@ -7,6 +7,7 @@ var port = 4321;
 var server = new ds.DataStoreServer().serveGlobal('store');
 var store = server.getStore('store');
 
+//HANDLE COUNT
 var refCount = store.ref('/count');
 refCount.update(1);
 refCount.on('update', function (value, path, flags) {
@@ -14,6 +15,7 @@ refCount.on('update', function (value, path, flags) {
     refCount.update(value + 1, ['lol']);
 });
 
+//HANDLE WORD
 var refWord = store.ref('/word');
 refWord.update("Ahello");
 refWord.on('update', function (value, path, flags) {
@@ -21,6 +23,25 @@ refWord.on('update', function (value, path, flags) {
     refWord.update(String.fromCharCode(value.charCodeAt(0) + 1) + value.substring(1), ['lol']);
 });
 
+//HANDLE DELETE
+store.ref('/delete-cmd').on('updateDirect', function (value) {
+    var cmd = value.cmd;
+    var args = value.args;
+
+    if (cmd === 'set') {
+        var val = args.length > 1 ? args[1] : null;
+
+        console.log('Set ' + args[0] + ' to ' + val);
+        store.ref('/delete').ref(args[0]).update(val);
+    }
+
+    if (cmd === 'del') {
+        console.log('Deleting ' + args[0]);
+        store.ref('/delete').ref(args[0]).remove();
+    }
+});
+
+//UPDATE TIME
 setInterval(function () {
     store.ref('/time').update(new Date().getTime());
 }, 1000);
