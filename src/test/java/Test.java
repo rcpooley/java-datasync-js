@@ -11,8 +11,9 @@ public class Test {
 	private static final int DELETE = 2;
 	private static final int PINGPONG = 3;
 	private static final int EVENTCEPTION = 4;
+	private static final int TESTEXCEPTION = 5;
 
-	private static int MODE = EVENTCEPTION;
+	private static int MODE = PINGPONG;
 
 	public static void main(String[] args) {
 		DataStoreClient client = new DataStoreClient();
@@ -97,12 +98,13 @@ public class Test {
 				}
 
 				case PINGPONG: {
-					String text = "lol?'''\"\"\\\\a||\"";
+					Object text = new JSONArray().put("first");
 
 					store.ref("/ping").update(text);
 
 					store.ref("/pong").value(((value, path) -> {
-						System.out.println(text + " = " + value + ": " + (text.equals(value) ? "TRUE" : "FALSE"));
+						if (value == null) value = "NULL";
+						System.out.println(text + " = " + value + ": " + (text.toString().equals(value.toString()) ? "TRUE" : "FALSE"));
 					}));
 					break;
 				}
@@ -115,6 +117,11 @@ public class Test {
 					}));
 
 					store.ref("/ping").update("cool");
+					break;
+				}
+
+				case TESTEXCEPTION: {
+					store.ref("/ping").update(new JSONArray().put("first"));
 					break;
 				}
 			}

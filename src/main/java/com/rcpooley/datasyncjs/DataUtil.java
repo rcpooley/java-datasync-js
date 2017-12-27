@@ -98,6 +98,10 @@ public class DataUtil {
 			return new JSONObject(str);
 		}
 
+		if (str.startsWith("[") && str.endsWith("]")) {
+			return new JSONArray(str);
+		}
+
 		if (str.equals("null")) {
 			return null;
 		}
