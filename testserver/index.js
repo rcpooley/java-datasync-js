@@ -36,7 +36,7 @@ store.ref('/delete-cmd').on('updateDirect', function (value) {
     }
 
     if (cmd === 'del') {
-        console.log('Deleting ' + args[0]);
+        console.log('Deleting ' + args[0]); 
         store.ref('/delete').ref(args[0]).remove();
     }
 });
@@ -45,6 +45,11 @@ store.ref('/delete-cmd').on('updateDirect', function (value) {
 setInterval(function () {
     store.ref('/time').update(new Date().getTime());
 }, 1000);
+
+//HANDLE PING PING
+store.ref('/ping').on('updateDirect', function (value) {
+    store.ref('pong').update(value);
+});
 
 app.get('*', function (req, res) {
     res.send('Hello World!');

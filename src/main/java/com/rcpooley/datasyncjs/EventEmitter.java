@@ -28,7 +28,11 @@ public class EventEmitter {
 	}
 
 	public void on(String event, Callback listener) {
-		getListeners(event).add(listener);
+		List<Callback> listeners = getListeners(event);
+
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
 	}
 
 	public void off(String event) {
@@ -36,16 +40,24 @@ public class EventEmitter {
 	}
 
 	public void off(String event, Callback listener) {
-		if (listener == null) {
-			listeners.remove(event);
-		} else {
-			getListeners(event).remove(listener);
+		List<Callback> listeners = getListeners(event);
+
+		synchronized (listeners) {
+			if (listener == null) {
+				listeners.remove(event);
+			} else {
+				listeners.remove(listener);
+			}
 		}
 	}
 
 	public void emit(String event, JSONObject data) {
-		getListeners(event).forEach(callback -> {
-			callback.callback(data);
-		});
+		List<Callback> listeners = getListeners(event);
+
+		synchronized (listeners) {
+			listeners.forEach(callback -> {
+				callback.callback(data);
+			});
+		}
 	}
 }

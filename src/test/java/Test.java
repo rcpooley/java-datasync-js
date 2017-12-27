@@ -9,8 +9,9 @@ public class Test {
 	private static final int COUNT = 0;
 	private static final int WORD = 1;
 	private static final int DELETE = 2;
+	private static final int PINGPONG = 3;
 
-	private static int MODE = DELETE;
+	private static int MODE = PINGPONG;
 
 	public static void main(String[] args) {
 		DataStoreClient client = new DataStoreClient();
@@ -93,8 +94,17 @@ public class Test {
 					tick = (tick + 1) % 3;
 					break;
 				}
-			}
 
+				case PINGPONG: {
+					String text = "lol?'''\"\"\\\\a||\"";
+
+					store.ref("/ping").update(text);
+
+					store.ref("/pong").value(((value, path) -> {
+						System.out.println(text + " = " + value + ": " + (text.equals(value) ? "TRUE" : "FALSE"));
+					}));
+				}
+			}
 		}
 	}
 

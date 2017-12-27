@@ -108,14 +108,15 @@ public class DataUtil {
 			try {
 				return Double.parseDouble(str);
 			} catch (Exception e2) {
-				return str.substring(1, str.length() - 1);
+				return new JSONObject("{\"a\":" + str + "}").getString("a");
 			}
 		}
 	}
 
 	public static String toJSONString(Object val) {
 		if (val instanceof String) {
-			return "\"" + val.toString() + "\"";
+			String a = new JSONObject().put("a", val).toString();
+			return a.substring(5, a.length() - 1);
 		} else if (val == null) {
 			return "null";
 		} else {
