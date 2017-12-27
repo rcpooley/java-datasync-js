@@ -10,8 +10,9 @@ public class Test {
 	private static final int WORD = 1;
 	private static final int DELETE = 2;
 	private static final int PINGPONG = 3;
+	private static final int EVENTCEPTION = 4;
 
-	private static int MODE = PINGPONG;
+	private static int MODE = EVENTCEPTION;
 
 	public static void main(String[] args) {
 		DataStoreClient client = new DataStoreClient();
@@ -103,6 +104,18 @@ public class Test {
 					store.ref("/pong").value(((value, path) -> {
 						System.out.println(text + " = " + value + ": " + (text.equals(value) ? "TRUE" : "FALSE"));
 					}));
+					break;
+				}
+
+				case EVENTCEPTION: {
+					store.ref("/pong").on("update", ((value, path, flags) -> {
+						store.ref("lol").on("update", ((value1, path1, flags1) -> {
+
+						}));
+					}));
+
+					store.ref("/ping").update("cool");
+					break;
 				}
 			}
 		}
