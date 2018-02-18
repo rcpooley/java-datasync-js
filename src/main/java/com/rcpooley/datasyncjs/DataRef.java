@@ -1,7 +1,5 @@
 package com.rcpooley.datasyncjs;
 
-import org.json.JSONObject;
-
 public class DataRef {
 
 	private DataStore store;
@@ -10,7 +8,7 @@ public class DataRef {
 
 	public DataRef(DataStore store, String path) {
 		this.store = store;
-		this.path = path;
+		this.path = DataUtil.formatPath(path);
 		this.name = DataUtil.getNameFromPath(this.path);
 	}
 
